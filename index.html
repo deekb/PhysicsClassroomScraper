@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe URL Extractor</title>
+    <title>Physics Classroom Iframe Extractor</title>
     <!-- Include Bulma CSS from JSDelivr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css">
     <!-- Include Clipboard.js from JSDelivr -->
@@ -14,13 +14,13 @@
     <section class="section">
         <div class="container">
             <!-- Title -->
-            <h1 class="title has-text-centered">Iframe URL Extractor</h1>
+            <h1 class="title has-text-centered">Physics Classroom Iframe Extractor</h1>
 
             <!-- Input Field -->
             <div class="field">
                 <label class="label" for="url-input">Enter URL:</label>
                 <div class="control">
-                    <input class="input" type="text" id="url-input" placeholder="https://example.com">
+                    <input class="input" type="text" id="url-input" placeholder="https://www.physicsclassroom.com/Physics-Interactives/Fluids/Bernoullis-Equation/Simulation">
                 </div>
             </div>
 
@@ -45,14 +45,13 @@
                     <button id="copy-btn" class="button is-info" data-clipboard-target="#result">Copy to Clipboard</button>
                 </div>
             </div>
-
-            <!-- Message Display -->
-            <p id="message" class="has-text-success"></p>
         </div>
     </section>
 
-    <!-- Include custom JavaScript -->
-    <script src="js/scripts.js"></script>
+    <!-- Notification container to hold dynamically created notifications -->
+    <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- Include custom JavaScript files as modules -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
-

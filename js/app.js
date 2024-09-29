@@ -1,10 +1,12 @@
+import { createNotification } from './notification.js';  // Import the notification module
+
 const BASE_URL = "https://www.physicsclassroom.com";
 const PROXY_URL = "https://corsproxy.io/?";  // Use CORS proxy URL
 
 document.getElementById("extract-btn").addEventListener("click", async () => {
     const url = document.getElementById("url-input").value;
     if (!url) {
-        alert("Please enter a URL");
+        createNotification("Please enter a URL", "is-danger");
         return;
     }
 
@@ -12,7 +14,7 @@ document.getElementById("extract-btn").addEventListener("click", async () => {
         // Fetch the content of the given URL using the CORS proxy
         const response = await fetch(PROXY_URL + url);
         if (!response.ok) {
-            alert("Failed to fetch the URL");
+            createNotification("Failed to fetch the URL", "is-danger");
             return;
         }
         const content = await response.text();
@@ -24,7 +26,7 @@ document.getElementById("extract-btn").addEventListener("click", async () => {
         // Find the iframe element with `allowfullscreen` attribute
         const iframe = doc.querySelector("iframe[allowfullscreen]");
         if (!iframe) {
-            alert("Failed to get Iframe (check URL)");
+            createNotification("Failed to get Iframe (check URL)", "is-danger");
             return;
         }
 
@@ -36,14 +38,15 @@ document.getElementById("extract-btn").addEventListener("click", async () => {
         const resultTextArea = document.getElementById("result");
         resultTextArea.value = iframeFullSrc;
 
-        // Update message
-        document.getElementById("message").innerText = "Iframe link extracted and ready to copy!";
+        // Display success message
+        createNotification("Iframe link extracted and ready to copy!", "is-success");
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred while extracting the iframe.");
+        createNotification("An error occurred while extracting the iframe.", "is-danger");
     }
 });
 
 // Initialize Clipboard.js for copying text
-new ClipboardJS('#copy-btn');
-
+new ClipboardJS('#copy-btn').on('success', () => {
+    createNotification("Copied to clipboard successfully!", "is-success");
+});

@@ -3,6 +3,7 @@ import { createNotification } from './notification.js';  // Import the notificat
 const BASE_URL = "https://www.physicsclassroom.com";
 const PROXY_URL = "https://corsproxy.io/?";  // Use CORS proxy URL
 
+// Main application logic for extracting the iframe URL
 document.getElementById("extract-btn").addEventListener("click", async () => {
     const url = document.getElementById("url-input").value;
     if (!url) {
@@ -50,3 +51,24 @@ document.getElementById("extract-btn").addEventListener("click", async () => {
 new ClipboardJS('#copy-btn').on('success', () => {
     createNotification("Copied to clipboard successfully!", "is-success");
 });
+
+// Help button event listener to display the Help modal
+const helpBtn = document.getElementById("help-btn");
+const helpModal = document.getElementById("help-modal");
+const helpModalCloseBtn = document.getElementById("help-modal-close-btn");
+const helpModalOkBtn = document.getElementById("help-modal-ok-btn");
+
+// Function to show the help modal
+function showHelpModal() {
+    helpModal.classList.add("is-active");
+}
+
+// Function to hide the help modal
+function hideHelpModal() {
+    helpModal.classList.remove("is-active");
+}
+
+// Event listeners to handle opening and closing the Help modal
+helpBtn.addEventListener("click", showHelpModal);
+helpModalCloseBtn.addEventListener("click", hideHelpModal);
+helpModalOkBtn.addEventListener("click", hideHelpModal);

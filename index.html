@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe URL Extractor</title>
+    <!-- Include Bulma CSS from JSDelivr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css">
+    <!-- Include custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Include Clipboard.js from JSDelivr -->
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+</head>
+<body>
+    <!-- Container for page content -->
+    <section class="section">
+        <div class="container">
+            <!-- Title -->
+            <h1 class="title has-text-centered">Iframe URL Extractor</h1>
+
+            <!-- Input Field -->
+            <div class="field">
+                <label class="label" for="url-input">Enter URL:</label>
+                <div class="control">
+                    <input class="input" type="text" id="url-input" placeholder="https://example.com">
+                </div>
+            </div>
+
+            <!-- Extract Button -->
+            <div class="field">
+                <div class="control">
+                    <button id="extract-btn" class="button is-link">Extract Iframe</button>
+                </div>
+            </div>
+
+            <!-- Result Textarea -->
+            <div class="field">
+                <label class="label" for="result">Extracted Iframe URL:</label>
+                <div class="control">
+                    <textarea class="textarea" id="result" placeholder="Iframe URL will appear here" readonly></textarea>
+                </div>
+            </div>
+
+            <!-- Copy Button -->
+            <div class="field">
+                <div class="control">
+                    <button id="copy-btn" class="button is-info" data-clipboard-target="#result">Copy to Clipboard</button>
+                </div>
+            </div>
+
+            <!-- Message Display -->
+            <p id="message" class="has-text-success"></p>
+        </div>
+    </section>
+
+    <!-- Include custom JavaScript -->
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+

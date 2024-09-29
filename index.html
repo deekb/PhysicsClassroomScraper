@@ -8,6 +8,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css" rel="stylesheet">
     <!-- Include Clipboard.js from JSDelivr -->
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+    <style>
+        /* Loader styles */
+        .loader {
+            display: none; /* hidden by default */
+        }
+
+        .loader.is-active {
+            display: block;
+            margin: 20px auto;
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top: 8px solid #fff; /* Your primary color */
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 <body>
 <!-- Container for page content -->
@@ -15,12 +41,17 @@
     <div class="container">
         <!-- Title -->
         <h1 class="title has-text-centered">Physics Classroom Iframe Extractor</h1>
+        <h2 class="subtitle has-text-centered">This tool allows you to extract iframe URLs from Physics Classroom interactive simulations.</h2>
+
+        <!-- Loading Spinner -->
+        <div class="loader" id="loading-spinner"></div>
 
         <!-- Input Field -->
         <div class="field">
             <label class="label" for="url-input">Enter URL:</label>
             <div class="control">
-                <input class="input" id="url-input" placeholder="https://www.physicsclassroom.com/Physics-Interactives/Fluids/Bernoullis-Equation/Simulation"
+                <input class="input" id="url-input"
+                       placeholder="https://www.physicsclassroom.com/Physics-Interactives/Fluids/Bernoullis-Equation/Simulation"
                        type="text">
             </div>
         </div>
@@ -64,8 +95,6 @@
             <button aria-label="close" class="delete" id="help-modal-close-btn"></button>
         </header>
         <section class="modal-card-body">
-            <h2 class="subtitle">Welcome to the Physics Classroom Iframe Extractor!</h2>
-            <p>This tool allows you to extract iframe URLs from Physics Classroom interactive simulations.</p>
             <h3 class="title is-4">Instructions:</h3>
             <ul>
                 <li><strong>Step 1:</strong> Enter the URL of a Physics Classroom interactive simulation in the "Enter
@@ -78,14 +107,15 @@
                 </li>
                 <li><strong>Step 5:</strong> Use the Help button for additional instructions.</li>
             </ul>
-            <p>If you encounter any issues, please ensure the URL is correct and includes 'http://' or 'https://'.</p>
-
+<br>
+            <br>
             <h3 class="title is-4">And here's why:</h3>
             <ul>
                 <li><strong>1.</strong> The extracted URL is ad-free and fullscreen with no distractions.</li>
                 <li><strong>2.</strong> The extracted URL uses up to 96% less RAM.</li>
                 <li><strong>3.</strong> The extracted URL reduces sustained graphics load by about 10%.</li>
             </ul>
+            <p>If you encounter any issues, please ensure the URL is correct and includes 'http://' or 'https://'.</p>
         </section>
         <footer class="modal-card-foot">
             <button class="button" id="help-modal-ok-btn">OK</button>

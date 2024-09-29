@@ -36,4 +36,4 @@ function createNotification(message, type) {
 }
 
 // Export the createNotification function to be used in other modules
-export { createNotification };
+export {createNotification};

@@ -1,4 +1,4 @@
-import { createNotification } from './notification.js';  // Import the notification module
+import {createNotification} from './notification.js'; // Import the notification module
 
 const BASE_URL = "https://www.physicsclassroom.com";
 const PROXY_URL = "https://corsproxy.io/?";  // Use CORS proxy URL
@@ -6,8 +6,14 @@ const PROXY_URL = "https://corsproxy.io/?";  // Use CORS proxy URL
 // Main application logic for extracting the iframe URL
 document.getElementById("extract-btn").addEventListener("click", async () => {
     const url = document.getElementById("url-input").value;
+    const loadingSpinner = document.getElementById("loading-spinner");
+
+    // Show the loading spinner
+    loadingSpinner.classList.add("is-active");
+
     if (!url) {
         createNotification("Please enter a URL", "is-danger");
+        loadingSpinner.classList.remove("is-active"); // Hide spinner
         return;
     }
 
@@ -44,6 +50,9 @@ document.getElementById("extract-btn").addEventListener("click", async () => {
     } catch (error) {
         console.error("Error:", error);
         createNotification("An error occurred while extracting the iframe.", "is-danger");
+    } finally {
+        // Hide the loading spinner when done
+        loadingSpinner.classList.remove("is-active");
     }
 });
 

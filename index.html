@@ -41,7 +41,8 @@
     <div class="container">
         <!-- Title -->
         <h1 class="title has-text-centered">Physics Classroom Iframe Extractor</h1>
-        <h2 class="subtitle has-text-centered">This tool allows you to extract iframe URLs from Physics Classroom interactive simulations.</h2>
+        <h2 class="subtitle has-text-centered">This tool allows you to extract iframe URLs from Physics Classroom
+            interactive simulations.</h2>
 
         <!-- Loading Spinner -->
         <div class="loader" id="loading-spinner"></div>
@@ -72,7 +73,10 @@
             <div class="control">
                 <textarea class="textarea" id="result" placeholder="Iframe URL will appear here" readonly></textarea>
             </div>
+
         </div>
+        <ul id="links-list"></ul>
+
 
         <!-- Copy Button -->
         <div class="field">
@@ -84,7 +88,8 @@
 </section>
 
 <!-- Notification container to hold dynamically created notifications -->
-<div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+<!--<div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>-->
+<div id="notification-container" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; justify-content: center; align-items: center; width: 100%; max-width: 600px;"></div>
 
 <!-- Help Modal -->
 <div class="modal" id="help-modal">
@@ -107,7 +112,7 @@
                 </li>
                 <li><strong>Step 5:</strong> Use the Help button for additional instructions.</li>
             </ul>
-<br>
+            <br>
             <br>
             <h3 class="title is-4">And here's why:</h3>
             <ul>

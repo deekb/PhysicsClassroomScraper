@@ -32,7 +32,7 @@ function createNotification(message, type) {
     // Remove the notification automatically after 3 seconds
     setTimeout(() => {
         notification.remove();
-    }, 3000);
+    }, 7000);
 }
 
 // Export the createNotification function to be used in other modules

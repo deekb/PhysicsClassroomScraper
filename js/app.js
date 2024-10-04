@@ -1,60 +1,110 @@
-import {createNotification} from './notification.js'; // Import the notification module
+import { createNotification } from './notification.js'; // Import the notification module
 
 const BASE_URL = "https://www.physicsclassroom.com";
-const PROXY_URL = "https://corsproxy.io/?";  // Use CORS proxy URL
+const PROXY_URL = "https://corsproxy.io/?"; // Use CORS proxy URL
 
-// Main application logic for extracting the iframe URL
-document.getElementById("extract-btn").addEventListener("click", async () => {
+// Event listener for the Extract button
+document.getElementById("extract-btn").addEventListener("click", () => {
     const url = document.getElementById("url-input").value;
-    const loadingSpinner = document.getElementById("loading-spinner");
-
-    // Show the loading spinner
-    loadingSpinner.classList.add("is-active");
 
     if (!url) {
         createNotification("Please enter a URL", "is-danger");
-        loadingSpinner.classList.remove("is-active"); // Hide spinner
         return;
     }
 
+    toggleLoadingSpinner(true);
+    handleExtraction(url);
+});
+
+// Main function to handle extraction logic
+async function handleExtraction(url) {
     try {
-        // Fetch the content of the given URL using the CORS proxy
-        const response = await fetch(PROXY_URL + url);
-        if (!response.ok) {
-            createNotification("Failed to fetch the URL", "is-danger");
-            return;
+        const content = await fetchPageContent(url);
+        const doc = parseHTML(content);
+
+        // Look for the iframe in the contentHolder div
+        let iframeFullSrc = findIframeSrcInContentHolder(doc);
+
+        if (!iframeFullSrc) {
+            // If no iframe found, look for the first matching <a> link and check that page for an iframe
+            const firstMatchingLink = findFirstMatchingLink(doc);
+            if (firstMatchingLink) {
+                const linkHref = firstMatchingLink.getAttribute("href");
+                const fullLinkHref = linkHref.startsWith("http") ? linkHref : BASE_URL + linkHref;
+
+                createNotification(`Navigating to ${fullLinkHref} to find iframe`, "is-info");
+
+                // Fetch the content of the linked page and look for iframe again
+                const linkedContent = await fetchPageContent(fullLinkHref);
+                const linkedDoc = parseHTML(linkedContent);
+                iframeFullSrc = findIframeSrcInContentHolder(linkedDoc);
+            }
         }
-        const content = await response.text();
 
-        // Parse the HTML content
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(content, "text/html");
-
-        // Find the iframe element with `allowfullscreen` attribute
-        const iframe = doc.querySelector("iframe[allowfullscreen]");
-        if (!iframe) {
-            createNotification("Failed to get Iframe (check URL)", "is-danger");
-            return;
-        }
-
-        // Get the src attribute and construct the full URL
-        const iframeSrc = iframe.getAttribute("src");
-        const iframeFullSrc = BASE_URL + iframeSrc;
-
-        // Display the extracted URL in the textarea
-        const resultTextArea = document.getElementById("result");
-        resultTextArea.value = iframeFullSrc;
-
-        // Display success message
-        createNotification("Iframe link extracted and ready to copy!", "is-success");
+        // Display the extracted iframe URL or show an appropriate message
+        displayIframeUrl(iframeFullSrc);
     } catch (error) {
         console.error("Error:", error);
-        createNotification("An error occurred while extracting the iframe.", "is-danger");
+        createNotification("An error occurred while extracting content.", "is-danger");
     } finally {
-        // Hide the loading spinner when done
+        toggleLoadingSpinner(false);
+    }
+}
+
+// Fetch the page content using the CORS proxy
+async function fetchPageContent(url) {
+    const response = await fetch(PROXY_URL + url);
+    if (!response.ok) {
+        throw new Error("Failed to fetch the URL");
+    }
+    return await response.text();
+}
+
+// Parse the HTML content and return the Document object
+function parseHTML(content) {
+    const parser = new DOMParser();
+    return parser.parseFromString(content, "text/html");
+}
+
+// Find and return the src of the first iframe inside the contentHolder div
+function findIframeSrcInContentHolder(doc) {
+    const contentHolder = doc.getElementById("contentHolder");
+    if (contentHolder) {
+        const iframe = contentHolder.querySelector("iframe");
+        if (iframe) {
+            const iframeSrc = iframe.getAttribute("src");
+            return iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc;
+        }
+    }
+    return null; // No iframe found
+}
+
+// Find the first matching <a> link inside contentHolder within a specific <h3> structure
+function findFirstMatchingLink(doc) {
+    const contentHolder = doc.getElementById("contentHolder");
+    if (contentHolder) {
+        return contentHolder.querySelector('h3[style="text-align: center;"] > a[href^="/mop/"]');
+    }
+    return null; // No matching link found
+}
+
+// Display the extracted iframe URL or a failure message in the result textarea
+function displayIframeUrl(iframeFullSrc) {
+    const resultTextArea = document.getElementById("result");
+    resultTextArea.value = iframeFullSrc ? iframeFullSrc : "No iframe link found in the provided content.";
+    const message = iframeFullSrc ? "Iframe link extracted and ready to copy!" : "No iframe found.";
+    createNotification(message, iframeFullSrc ? "is-success" : "is-warning");
+}
+
+// Toggle the loading spinner visibility
+function toggleLoadingSpinner(isActive) {
+    const loadingSpinner = document.getElementById("loading-spinner");
+    if (isActive) {
+        loadingSpinner.classList.add("is-active");
+    } else {
         loadingSpinner.classList.remove("is-active");
     }
-});
+}
 
 // Initialize Clipboard.js for copying text
 new ClipboardJS('#copy-btn').on('success', () => {

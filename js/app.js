@@ -83,7 +83,8 @@ function findIframeSrcInContentHolder(doc) {
 function findFirstMatchingLink(doc) {
     const contentHolder = doc.getElementById("contentHolder");
     if (contentHolder) {
-        return contentHolder.querySelector('h3[style="text-align: center;"] > a[href^="/mop/"]');
+        // return contentHolder.querySelector('h3[style="text-align: center;"] > a[href^="/mop/"]');
+        return contentHolder.querySelector('h3[style*="text-align: center;"]  > a');
     }
     return null; // No matching link found
 }

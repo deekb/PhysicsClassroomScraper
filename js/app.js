@@ -22,8 +22,8 @@ async function handleExtraction(url) {
         const content = await fetchPageContent(url);
         const doc = parseHTML(content);
 
-        // Look for the iframes in the document and get their src attributes
-        let iframeSrcs = findAllIframeSrcs(doc);
+        // Look for the iframes inside the specific div with id="html5frame_ResizableIframe_Widget" class="aspectIframe"
+        let iframeSrcs = findIframeSrcsInsideSpecificDiv(doc);
 
         if (iframeSrcs.length === 0) {
             // If no iframe found, look for the first matching <a> link and check that page for an iframe
@@ -37,7 +37,7 @@ async function handleExtraction(url) {
                 // Fetch the content of the linked page and look for iframes again
                 const linkedContent = await fetchPageContent(fullLinkHref);
                 const linkedDoc = parseHTML(linkedContent);
-                iframeSrcs = findAllIframeSrcs(linkedDoc);
+                iframeSrcs = findIframeSrcsInsideSpecificDiv(linkedDoc);
             }
         }
 
@@ -66,17 +66,21 @@ function parseHTML(content) {
     return parser.parseFromString(content, "text/html");
 }
 
-// Find and return the src of all iframes in the document
-function findAllIframeSrcs(doc) {
-    const iframes = doc.querySelectorAll("iframe");
+// Find and return the src of all iframes inside the specific div with id="html5frame_ResizableIframe_Widget" class="aspectIframe"
+function findIframeSrcsInsideSpecificDiv(doc) {
+    const targetDiv = doc.querySelector('div#html5frame_ResizableIframe_Widget.aspectIframe');
     const iframeSrcs = [];
 
-    iframes.forEach(iframe => {
-        const iframeSrc = iframe.getAttribute("src");
-        if (iframeSrc) {
-            iframeSrcs.push(iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc);
-        }
-    });
+    if (targetDiv) {
+        // Look for iframes inside the target div and recursively find their src
+        const iframes = targetDiv.querySelectorAll("iframe");
+        iframes.forEach(iframe => {
+            const iframeSrc = iframe.getAttribute("src");
+            if (iframeSrc) {
+                iframeSrcs.push(iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc);
+            }
+        });
+    }
 
     return iframeSrcs;
 }

@@ -22,10 +22,10 @@ async function handleExtraction(url) {
         const content = await fetchPageContent(url);
         const doc = parseHTML(content);
 
-        // Look for the iframe in the contentHolder div
-        let iframeFullSrc = findIframeSrcInContentHolder(doc);
+        // Look for the iframes in the document and get their src attributes
+        let iframeSrcs = findAllIframeSrcs(doc);
 
-        if (!iframeFullSrc) {
+        if (iframeSrcs.length === 0) {
             // If no iframe found, look for the first matching <a> link and check that page for an iframe
             const firstMatchingLink = findFirstMatchingLink(doc);
             if (firstMatchingLink) {
@@ -34,15 +34,15 @@ async function handleExtraction(url) {
 
                 createNotification(`Navigating to ${fullLinkHref} to find iframe`, "is-info");
 
-                // Fetch the content of the linked page and look for iframe again
+                // Fetch the content of the linked page and look for iframes again
                 const linkedContent = await fetchPageContent(fullLinkHref);
                 const linkedDoc = parseHTML(linkedContent);
-                iframeFullSrc = findIframeSrcInContentHolder(linkedDoc);
+                iframeSrcs = findAllIframeSrcs(linkedDoc);
             }
         }
 
-        // Display the extracted iframe URL or show an appropriate message
-        displayIframeUrl(iframeFullSrc);
+        // Display the extracted iframe URLs or show an appropriate message
+        displayIframeUrls(iframeSrcs);
     } catch (error) {
         console.error("Error:", error);
         createNotification("An error occurred while extracting content.", "is-danger");
@@ -66,35 +66,41 @@ function parseHTML(content) {
     return parser.parseFromString(content, "text/html");
 }
 
-// Find and return the src of the first iframe inside the contentHolder div
-function findIframeSrcInContentHolder(doc) {
-    const contentHolder = doc.getElementById("contentHolder");
-    if (contentHolder) {
-        const iframe = contentHolder.querySelector("iframe");
-        if (iframe) {
-            const iframeSrc = iframe.getAttribute("src");
-            return iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc;
+// Find and return the src of all iframes in the document
+function findAllIframeSrcs(doc) {
+    const iframes = doc.querySelectorAll("iframe");
+    const iframeSrcs = [];
+
+    iframes.forEach(iframe => {
+        const iframeSrc = iframe.getAttribute("src");
+        if (iframeSrc) {
+            iframeSrcs.push(iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc);
         }
-    }
-    return null; // No iframe found
+    });
+
+    return iframeSrcs;
 }
 
 // Find the first matching <a> link inside contentHolder within a specific <h3> structure
 function findFirstMatchingLink(doc) {
-    const contentHolder = doc.getElementById("contentHolder");
+    const contentHolder = doc.getElementById("aspect-ratio");
     if (contentHolder) {
-        // return contentHolder.querySelector('h3[style="text-align: center;"] > a[href^="/mop/"]');
-        return contentHolder.querySelector('h3[style*="text-align: center;"]  > a');
+        return contentHolder.querySelector('h3[style*="text-align: center;"] > a[href^="/mop/"]');
     }
     return null; // No matching link found
 }
 
-// Display the extracted iframe URL or a failure message in the result textarea
-function displayIframeUrl(iframeFullSrc) {
+// Display the extracted iframe URLs or a failure message in the result textarea
+function displayIframeUrls(iframeSrcs) {
     const resultTextArea = document.getElementById("result");
-    resultTextArea.value = iframeFullSrc ? iframeFullSrc : "No iframe link found in the provided content.";
-    const message = iframeFullSrc ? "Iframe link extracted and ready to copy!" : "No iframe found.";
-    createNotification(message, iframeFullSrc ? "is-success" : "is-warning");
+
+    if (iframeSrcs.length > 0) {
+        resultTextArea.value = iframeSrcs.join("\n");
+        createNotification("Iframe links extracted and ready to copy!", "is-success");
+    } else {
+        resultTextArea.value = "No iframe link found in the provided content.";
+        createNotification("No iframe found.", "is-warning");
+    }
 }
 
 // Toggle the loading spinner visibility

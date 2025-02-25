@@ -9,31 +9,30 @@ function createNotification(message, type) {
     notification.className = `notification ${type}`;
     notification.style.marginBottom = "10px";
     notification.style.display = "flex";
-    notification.style.alignItems = "center";  // Vertically center the elements
-    notification.style.justifyContent = "space-between";  // Space between delete button and text
+    notification.style.alignItems = "center";
+    notification.style.justifyContent = "space-between";
 
     // Add close button and message text
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete";
-    deleteButton.style.marginLeft = "10px";  // Add spacing to prevent overlapping text
+    deleteButton.style.marginLeft = "10px";
     deleteButton.addEventListener("click", () => notification.remove());
     notification.appendChild(deleteButton);
 
     const messageText = document.createElement("span");
     messageText.textContent = message;
-    messageText.style.flexGrow = "1";  // Allow message text to use available space
-    messageText.style.paddingRight = "15px";  // Add padding to ensure space between text and close button
+    messageText.style.flexGrow = "1";
+    messageText.style.paddingRight = "15px";
     notification.appendChild(messageText);
 
-    // Add the notification to the notification container
+    // Add the notification to the container
     const container = document.getElementById("notification-container");
     container.appendChild(notification);
 
-    // Remove the notification automatically after 3 seconds
+    // Automatically remove the notification after 7 seconds
     setTimeout(() => {
         notification.remove();
     }, 7000);
 }
 
-// Export the createNotification function to be used in other modules
-export {createNotification};
+export { createNotification };

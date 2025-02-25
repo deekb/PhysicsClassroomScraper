@@ -19,7 +19,7 @@
             margin: 20px auto;
             border: 8px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            border-top: 8px solid #fff; /* Your primary color */
+            border-top: 8px solid #fff;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
@@ -41,8 +41,7 @@
     <div class="container">
         <!-- Title -->
         <h1 class="title has-text-centered">Physics Classroom Iframe Extractor</h1>
-        <h2 class="subtitle has-text-centered">This tool allows you to extract iframe URLs from Physics Classroom
-            interactive simulations.</h2>
+        <h2 class="subtitle has-text-centered">This tool allows you to extract iframe URLs from Physics Classroom interactive simulations.</h2>
 
         <!-- Loading Spinner -->
         <div class="loader" id="loading-spinner"></div>
@@ -73,10 +72,8 @@
             <div class="control">
                 <textarea class="textarea" id="result" placeholder="Iframe URL will appear here" readonly></textarea>
             </div>
-
         </div>
         <ul id="links-list"></ul>
-
 
         <!-- Copy Button -->
         <div class="field">
@@ -87,8 +84,7 @@
     </div>
 </section>
 
-<!-- Notification container to hold dynamically created notifications -->
-<!--<div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>-->
+<!-- Notification container -->
 <div id="notification-container" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; justify-content: center; align-items: center; width: 100%; max-width: 600px;"></div>
 
 <!-- Help Modal -->
@@ -102,14 +98,10 @@
         <section class="modal-card-body">
             <h3 class="title is-4">Instructions:</h3>
             <ul>
-                <li><strong>Step 1:</strong> Enter the URL of a Physics Classroom interactive simulation in the "Enter
-                    URL" field.
-                </li>
+                <li><strong>Step 1:</strong> Enter the URL of a Physics Classroom interactive simulation in the "Enter URL" field.</li>
                 <li><strong>Step 2:</strong> Click the "Extract Iframe" button to fetch and extract the Iframe URL.</li>
                 <li><strong>Step 3:</strong> The extracted Iframe URL will appear in the text area below.</li>
-                <li><strong>Step 4:</strong> Click "Copy to Clipboard" to copy the extracted URL and use it in your own
-                    web pages or applications.
-                </li>
+                <li><strong>Step 4:</strong> Click "Copy to Clipboard" to copy the extracted URL.</li>
                 <li><strong>Step 5:</strong> Use the Help button for additional instructions.</li>
             </ul>
             <br>
@@ -128,8 +120,7 @@
     </div>
 </div>
 
-
 <!-- Include custom JavaScript files as modules -->
-<script src="js/app.js" type="module"></script>
+<script src="/static/js/app.js" type="module"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@ import time
 import traceback
 import threading
 import requests
+import atexit
 from flask import Flask, request, jsonify, render_template
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -13,7 +14,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 app = Flask(__name__)
 
-# Global driver instance and lock for thread safety
+# Global driver instance and lock (per worker)
 driver = None
 driver_lock = threading.Lock()
 
@@ -33,7 +34,7 @@ def download_ublock_extension():
     return extension_path
 
 def init_driver():
-    """Initialize the global Firefox WebDriver with uBlock Origin installed."""
+    """Initializes the global Firefox WebDriver with uBlock Origin installed."""
     global driver
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
@@ -42,43 +43,49 @@ def init_driver():
     service = FirefoxService(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service, options=options)
 
-    # Install uBlock Origin only once at startup.
+    # Install uBlock Origin once
     ublock_extension_path = download_ublock_extension()
     driver.install_addon(ublock_extension_path, temporary=True)
     print("Driver initialized with uBlock Origin.")
 
+# Initialize the driver on first request (per worker)
+@app.before_request
+def startup():
+    global driver
+    if driver is None:
+        init_driver()
+
+# Ensure driver quits on process exit
+atexit.register(lambda: driver.quit() if driver is not None else None)
+
 def extract_iframe(url):
     """
-    Navigates to the given URL using the global driver and:
-      1. If a link with the text "Launch Interactive" exists, clicks it (or navigates to its destination).
-      2. Searches for the first iframe whose src contains 'PhysicsClassroom'.
-    Returns the iframe src if found, otherwise None.
+    Navigates to the provided URL, clicks a "Launch Interactive" link if it exists,
+    then continuously checks for an iframe whose src contains 'PhysicsClassroom'.
+    Returns the iframe src if found, or None.
     """
     global driver
     with driver_lock:
-        # Navigate to the initial URL
         driver.get(url)
         WebDriverWait(driver, 10).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
 
-        # Look for a link with text "Launch Interactive"
+        # Look for a link with the text "Launch Interactive"
         try:
             launch_link = WebDriverWait(driver, 3).until(
                 EC.element_to_be_clickable((By.LINK_TEXT, "Launch Interactive"))
             )
             if launch_link:
-                # Click the link and wait for navigation
                 launch_link.click()
                 WebDriverWait(driver, 10).until(
                     lambda d: d.execute_script("return document.readyState") == "complete"
                 )
                 print("Navigated to Launch Interactive page.")
         except Exception as e:
-            # Link not found; continue on the current page
-            print("No 'Launch Interactive' link found, proceeding with extraction.")
+            print("No 'Launch Interactive' link found; proceeding with extraction.")
 
-        # Now search for the iframe
+        # Search for the target iframe
         start_time = time.time()
         max_wait_time = 10  # seconds
         found_src = None
@@ -115,12 +122,3 @@ def extract():
     except Exception as e:
         traceback.print_exc()
         return jsonify({"error": "An error occurred during extraction."}), 500
-
-if __name__ == "__main__":
-    # Initialize the WebDriver once at startup.
-    init_driver()
-    try:
-        app.run(debug=True)
-    finally:
-        if driver:
-            driver.quit()
